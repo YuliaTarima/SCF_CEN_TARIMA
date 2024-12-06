@@ -1,0 +1,8 @@
+/06_Capstone/.idea/
+/client/.idea/
+/server/.idea/
+/client/node_modules/
+/server/node_modules/
+/client/config.js
+/server/.env
+/server/GPT_APP.postman_collection.json
