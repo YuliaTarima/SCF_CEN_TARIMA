@@ -36,8 +36,9 @@ YuliaDrawChat is a Progressive Web Application (PWA) that combines a drawing too
   Collects and integrates modules from `app_modules` for overall app functionality.
     - **DrawingApp.js**: Contains the logic for the Drawing Tool.
     - **MessagingApp.js**: Contains the logic for the Messaging System.
-    - **PWAManager.js**: Manages PWA and Service Worker initialization.
     - **UIManager.js**: Handles initialization of app shell elements, theme detection and application, and updates connection status on the UI.
+    - **PWAManager.js**: Manages PWA and Service Worker initialization.
+    - **NotificationManager.js**: Handles the push notification logic.
 - **manifest.json**: Defines the PWA configuration, including app icons and theme color.
 - **service-worker.js**: Manages caching strategies, offline support, and background synchronization.
 - **offline-page.html**: A fallback page displayed when the app is accessed offline without a cached version.
