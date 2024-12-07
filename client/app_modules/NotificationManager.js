@@ -2,7 +2,6 @@ const SERVER_URL = window.env.SERVER_URL || 'http://localhost:6069';
 const VAPID_KEY_PUBLIC = window.env.VAPID_KEY_PUBLIC;
 
 export async function notifyServerToSendPush({trigger, registration}) {
-    if ( Object.keys(registration).length === 0 || !registration || !registration.pushManager) return;
     console.log('notifyServerToSendPush({trigger})', trigger);
     console.log('notifyServerToSendPush({registration})', registration);
     let subscription = await getSubscriptionIfExistsClient(registration);
@@ -35,19 +34,19 @@ export async function notificationPermissionGranted() {
 }
 
 export async function verifyOrCreatePushSubscription(registration) {
-    if ( Object.keys(registration).length === 0 || !registration || !registration.pushManager) return null;
+    if (!registration || !registration.pushManager) return null;
     let subscription = await getSubscriptionIfExistsClient(registration);
     console.log('verifyOrCreatePushSubscription subscription: ', !!subscription, subscription)
-    if ( Object.keys(subscription).length !== 0) {return subscription;}
-        const newClientSubscription = await createPushSubscriptionClient(registration);
-        const newServerSubscription = await createPushSubscriptionServer(registration);
-        console.log('verifyOrCreatePushSubscription: newClientSubscription ', !!newClientSubscription, newClientSubscription);
-        console.log('verifyOrCreatePushSubscription: newServerSubscription ', !!newServerSubscription, newServerSubscription.json());
-        return !!newClientSubscription ? newClientSubscription : null;
+    if (!!subscription) return subscription;
+    const newClientSubscription = await createPushSubscriptionClient(registration);
+    const newServerSubscription = await createPushSubscriptionServer(registration);
+    console.log('verifyOrCreatePushSubscription: newClientSubscription ', !!newClientSubscription, newClientSubscription);
+    console.log('verifyOrCreatePushSubscription: newServerSubscription ', !!newServerSubscription, newServerSubscription);
+    return !!newClientSubscription ? newClientSubscription : null;
 }
 
 async function createPushSubscriptionClient(registration) {
-    if ( Object.keys(registration).length === 0 || !registration || !registration.pushManager) return null;
+    if (!registration || !registration.pushManager) return null;
     const subscriptionArgs = {
         userVisibleOnly: true,
         // applicationServerKey: VAPID_KEY_PUBLIC,
@@ -73,7 +72,7 @@ async function createPushSubscriptionServer(subscription) {
 }
 
 async function getSubscriptionIfExistsClient(registration) {
-    if ( Object.keys(registration).length === 0 || !registration || !registration.pushManager) return null;
+    if (!registration || !registration.pushManager) return null;
     const subscription = await registration.pushManager.getSubscription();
     console.log('getSubscriptionIfExistsClient: subscription:', subscription);
     return subscription ? subscription : null;

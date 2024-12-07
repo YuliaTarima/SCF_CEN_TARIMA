@@ -145,6 +145,10 @@ app.post('/subscribe', (req, res) => {
     // Get push subscription object from request body
     const subscription = req.body;
     console.log(`/subscribe req.body: `, subscription);
+    if (Object.keys(subscription).length === 0) {
+        console.log(`/subscribe: Object.keys(subscription).length === 0: `, Object.keys(subscription).length === 0, subscription)
+        // return;
+    }
 
     (async () => {
         try {
