@@ -1,11 +1,15 @@
 const SERVER_URL = `${window.env.SERVER_URL}` || 'http://localhost:6069';
 const VAPID_KEY_PUBLIC = window.env.VAPID_KEY_PUBLIC;
 
-export async function notifyServerToSendPush(trigger) {
-    const subscription = await getPushSubscriptionClient();
+export async function notifyServerToSendPush({trigger, registration}) {
+    console.log('notifyServerToSendPush({trigger})', trigger);
+    console.log('notifyServerToSendPush({registration})', registration);
+    let subscription = await getPushSubscriptionClient(registration);
+
     if (!subscription || !subscription.endpoint) {
         console.log('NotificationManager/notifyServerToSendPush subscription', subscription);
-        throw new Error('notifyServerToSendPush: Invalid subscription: Missing endpoint.');
+        // throw new Error('notifyServerToSendPush: Invalid subscription: Missing endpoint.');
+        subscription = await createPushSubscriptionBrowser(registration);
     }
     // Send the subscription and message to the server to trigger a push notification
     const response = await fetch(`${SERVER_URL}/sendNotification`, {
@@ -24,15 +28,14 @@ export async function notificationPermissionGranted() {
     if ('Notification' in window) {
         const permission = await Notification.requestPermission();
         console.log('Notification permission:', permission);
-
         return permission === 'granted';
     }
     return false;
 }
 
 export async function handlePushSubscription(registration) {
+            const subscription = await getPushSubscriptionClient(registration);
 
-            const subscription = await getPushSubscriptionClient();
             if (!subscription) { // Check if the subscription does NOT exist
                 const newClientSubscription = await createPushSubscriptionBrowser(registration);
                 const newServerSubscription = await createPushSubscriptionServer(newClientSubscription);
@@ -43,16 +46,18 @@ export async function handlePushSubscription(registration) {
 }
 
 async function createPushSubscriptionBrowser(registration) {
+    console.log('createPushSubscriptionBrowser: registration', registration);
     try {
+        console.log('createPushSubscriptionBrowser: registration', registration);
         // Check if pushManager is available in the service worker registration
-        if (!registration.pushManager) {
-            throw new Error('PushManager is not available');
+        if (!registration || !registration.pushManager) {
+            console.log('createPushSubscriptionBrowser: registration', registration);
+            // throw new Error('createPushSubscriptionBrowser: PushManager is not available');
         }
 
         // Subscribe to push notifications, if the user has not already subscribed
         const subscription = await registration.pushManager.subscribe({
-            userVisibleOnly: true, // Notifications must be visible to the user
-            //urlBase64ToUint8Array(VAPID_KEY_PUBLIC)
+            userVisibleOnly: true,
             applicationServerKey: VAPID_KEY_PUBLIC,
         });
 
@@ -61,7 +66,7 @@ async function createPushSubscriptionBrowser(registration) {
 
     } catch (error) {
         console.error('createPushSubscriptionBrowser: Failed to get push subscription:', error);
-        throw error; // Throw error to be handled elsewhere
+        // throw error; // Throw error to be handled elsewhere
     }
 }
 
@@ -84,8 +89,8 @@ async function createPushSubscriptionServer(subscription) {
     }
 }
 
-async function getPushSubscriptionClient() {
-    const subscription = await serviceWorkerRegistration.pushManager.getSubscription();
+async function getPushSubscriptionClient(registration) {
+    const subscription = await registration.pushManager.getSubscription();
     console.log('getPushSubscriptionClient: Existing subscription found:', subscription);
     return subscription ? subscription : null;
 }

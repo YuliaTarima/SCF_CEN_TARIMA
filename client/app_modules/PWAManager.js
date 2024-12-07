@@ -9,29 +9,17 @@ class PWAManager {
         try {
             if ('serviceWorker' in navigator) {
                 try {
-                    // Check if service workers are already registered
-                    const registrations = await navigator.serviceWorker.getRegistrations();
-
-                    if (registrations.length > 0) {
-                        window.isServiceWorkerRegistered = true;
-                        // console.log('PWAManager: window.isServiceWorkerRegistered: ', window.isServiceWorkerRegistered);
-                        // Return the first registration found
-                        window.serviceWorkerRegistration = registrations[0];
-                        // console.log('PWAManager: window.serviceWorkerRegistration: ', window.serviceWorkerRegistration);
-                        // Ensure push subscription is handled
-                        // Notify the server to send a welcome push notification
-                        // Check if notifications are supported and permission is granted
-                        const isNotificationPermissionGranted = notificationPermissionGranted();
-                        if (isNotificationPermissionGranted) {
-                            await handlePushSubscription(registrations[0]);
-                            await notifyServerToSendPush("onPageLoad");
-                        }
-                    } else {
-                        console.log('PWAManager: No service worker registration found');
-                        return null; // No registration found, early return
+                    const registration = await navigator.serviceWorker.register('./service-worker.js');
+                    console.log('PWAManager: Service worker registration ', registration);
+                    window.isServiceWorkerRegistered = true;
+                    window.serviceWorkerRegistration = registration;
+                    const isNotificationPermissionGranted = notificationPermissionGranted();
+                    if (registration && isNotificationPermissionGranted) {
+                        await handlePushSubscription(registration);
+                        await notifyServerToSendPush({trigger: "onPageLoad", registration});
                     }
                 } catch (error) {
-                    console.error('PWAManager: Error checking service worker registration:', error);
+                    console.error('PWAManager: Service worker registration:', error);
                     return null; // Error occurred, return null
                 }
             } else {
