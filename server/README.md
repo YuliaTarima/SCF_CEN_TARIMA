@@ -1,4 +1,4 @@
-# Simple Express GPT Server
+# Simple Express Server
 
 ## Installing & Running
 1)  Clone this repo
