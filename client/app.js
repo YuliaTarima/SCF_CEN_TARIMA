@@ -2,6 +2,7 @@ import MessagingApp from './app_modules/MessagingApp.js';
 import DrawingApp from "./app_modules/DrawingApp.js";
 import UIManager from "./app_modules/UIManager.js";
 import PWAManager from "./app_modules/PWAManager.js";
+import {notificationPermissionGranted, verifyOrCreatePushSubscription} from "./app_modules/NotificationManager.js";
 
 (async () => {
     try {
@@ -14,8 +15,6 @@ import PWAManager from "./app_modules/PWAManager.js";
                 new DrawingApp();
                 new MessagingApp();
                 await PWAManager.initialize();
-
-
 
             } catch (error) {
                 console.error("App.js: Error Initializing app modules:", error);

@@ -15,7 +15,7 @@ class UIManager {
     // Initialize the layout and UI components of the app
     initializeUI() {
         try {
-            console.log('HTML comes from UIManager.');
+            // console.log('HTML comes from UIManager.');
             document.body.innerHTML = `
                 <div class="app-header">
                     <h1>Yulia's Drawing and Chatting App</h1>

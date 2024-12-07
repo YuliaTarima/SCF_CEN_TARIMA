@@ -144,6 +144,7 @@ async function sendToSingleRecipient(subscription, notificationPayload, res) {
 app.post('/subscribe', (req, res) => {
     // Get push subscription object from request body
     const subscription = req.body;
+    console.log(`/subscribe req.body: `, subscription);
 
     (async () => {
         try {

@@ -1,4 +1,4 @@
-import {handlePushSubscription, notifyServerToSendPush, notificationPermissionGranted} from './NotificationManager.js';
+import {verifyOrCreatePushSubscription, notifyServerToSendPush, notificationPermissionGranted} from './NotificationManager.js';
 
 class PWAManager {
     /**
@@ -11,11 +11,10 @@ class PWAManager {
                 try {
                     const registration = await navigator.serviceWorker.register('./service-worker.js');
                     console.log('PWAManager: Service worker registration ', registration);
-                    window.isServiceWorkerRegistered = true;
-                    window.serviceWorkerRegistration = registration;
-                    const isNotificationPermissionGranted = notificationPermissionGranted();
-                    if (registration && isNotificationPermissionGranted) {
-                        await handlePushSubscription(registration);
+                     const isNotificationPermissionGranted = await notificationPermissionGranted();
+                    if (!registration) console.log('PWAManager: No SW registration', registration);
+                    if (!!registration && !!registration.pushManager && !!isNotificationPermissionGranted) {
+                        await verifyOrCreatePushSubscription(registration);
                         await notifyServerToSendPush({trigger: "onPageLoad", registration});
                     }
                 } catch (error) {
